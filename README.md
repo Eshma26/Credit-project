@@ -1,7 +1,7 @@
 ### README.md
 
 ```markdown
-# Credit Card Fraud Detection Pipeline
+# Credit Card Fraud Detection
 
 A Machine Learning pipeline designed to handle extreme class imbalance in financial transaction logging datasets.
 This repository implements data pre-processing, robust evaluation techniques, class rebalancing frameworks (Down-sampling and SMOTE Over-sampling),
