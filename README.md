@@ -8,22 +8,51 @@ This repository implements data pre-processing, robust evaluation techniques, cl
 diagnostic visualizations, and a dynamic serialization system for production deployment. All analysis, modeling, and visualizations are self-contained
 within the interactive notebook environment.
 
-## 📋 Project Sufficiency Assessment
+## Execution Flow Architecture
 
 This architecture represents a complete, mathematically robust prototype for handling imbalanced classification.
-Here is a baseline assessment of its programmatic readiness:
+Here is a baseline of its programmatic readiness:
 
-| Phase | Architecture Component | Sufficiency Status | Notes / Edge Cases Addressed |
-| :--- | :--- | :--- | :--- |
-| **Phase 1** | **Data Loading & Check** | **Sufficient** | Added runtime validation for missing labels (`NaN`) and target data constraints. |
-| **Phase 2** | **Data Splitting** | **Sufficient** | Enforces **Stratified Splitting** to ensure minority representations exist in train/test splits. Employs a non-stratified fallback mechanism. |
-| **Phase 3** | **Feature Scaling** | **Excellent** | Avoids **Data Leakage** by fitting the `StandardScaler` strictly on the training partition and transforming the test partition. |
-| **Phase 4** | **Under-sampling** | **Sufficient** | Extracts majority elements matching minority lengths. Guarded against 0-minority data crashes. |
-| **Phase 5** | **Over-sampling** | **Excellent** | Implements Synthetic Minority Over-sampling Technique (**SMOTE**) with dynamic `k_neighbors` scaling. |
-| **Phase 6** | **Diagnostics & Visuals**| **Outstanding**| Includes complete evaluation profiles directly inline: Confusion Matrices, ROC Curves, Precision-Recall (PR) Curves, and Model Feature Importance plots. |
-| **Phase 7** | **Deployment Pipeline** | **Production-Ready**| Automatically parses test metrics, identifies the mathematically superior classifier, and serializes a compound dictionary containing both the **Model** object and the associated **Scaler** parameters. |
+[ Raw Credit Card CSV Data ]
+           │
+           ▼
+[ Data Splitting & Validation ] ──► (Guards against single-class truncations)
+           │
+           ▼
+[ Training Set Fit: StandardScaler ] ──► (Prevents evaluation data leakage)
+           │
+      ┌────┴────────────────────────┐
+      ▼                             ▼
+[ Experiment 1: Under-sampling ]  [ Experiment 2: SMOTE Over-sampling ]
+      │                             │
+      ▼                             ▼
+[ Logistic Regression Fit ]       [ Logistic Regression Fit ]
+      │                             │
+      └────┬────────────────────────┘
+           │
+           ▼
+[ Inline Notebook Visualizations ] ──► (Confusion Matrix, ROC, Precision-Recall)
+           │
+           ▼
+[ Dynamic ROC-AUC Selection Engine ]
+           │
+           ▼
+[ Production Artifact: *.joblib ] ──► (Contains Model + Exact Fit Scaler)
 
----
+
+
+## Performance & Metric Profiles
+Because credit card fraud is highly rare (~0.17% of total records), the traditional accuracy metric is highly deceptive. This project assesses performance using:
+
+1. Precision-Recall (PR) Curve Area: Tracks classifier efficiency across specific fraud targets.
+
+2. Confusion Matrices: Explicitly profiles False Negatives (untracked fraud) vs. False Positives (customer friction).
+
+3. Feature Importance (Beta Coefficients): Inspects model coefficients to determine exactly which hidden sub-components (V1-V28 variables) influence fraud predictions the most.
+
+## Production Deployment Usage
+The pipeline saves a combined joblib object ensuring that live production data undergoes the exact same feature scaling steps as the training data before reaching the model.
+
 
 ## 🛠️ Installation & Setup
 
